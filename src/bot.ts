@@ -4,6 +4,9 @@ import express from "express";
 import { applyTextEffect, Variant } from "./textEffects";
 
 import type { Variant as TextEffectVariant } from "./textEffects";
+
+// Create a bot using the Telegram token
+const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 const neighborsMapping: { [code: string]: string } = {
   "001": "El vecino Carlos ha activado la alarma.",
   "002": "El vecino Luis ha activado la alarma.",
@@ -16,9 +19,6 @@ const neighborsMapping: { [code: string]: string } = {
   "009": "La vecina Teresa ha activado la alarma.",
   "010": "El vecino Jorge ha activado la alarma.",
 };
-
-// Create a bot using the Telegram token
-const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 // Handle the /yo command to greet the user
 bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
@@ -184,20 +184,14 @@ const introductionMessage = `Hola, soy el bot del Norte.
 <b>Commands</b>
 /yo - Be greeted by me
 /effect [text] - Show a keyboard to apply text effects to [text]`;
-
-bot.on('message', (ctx) => {
+bot.on('message', (ctx, next) => {
   const inputMessage = ctx.message?.text || "";
   if (neighborsMapping[inputMessage]) {
     ctx.reply(neighborsMapping[inputMessage]);
+  } else {
+    next(); // Pasar al siguiente middleware
   }
 });
-
-const replyWithIntro = (ctx: any) =>
-  ctx.reply(introductionMessage, {
-    reply_markup: aboutUrlKeyboard,
-    parse_mode: "HTML",
-  });
-
 const replyWithIntro = (ctx: any) =>
   ctx.reply(introductionMessage, {
     reply_markup: aboutUrlKeyboard,
