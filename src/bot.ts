@@ -1,14 +1,9 @@
 import { Bot } from "grammy";
 
-// Asegúrate de que esta línea esté obteniendo el token adecuadamente
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-if (!TELEGRAM_TOKEN) {
-    throw new Error("TELEGRAM_TOKEN is not set in the environment variables.");
-}
+const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-const bot = new Bot(TELEGRAM_TOKEN);
-
-const vecinos = {
+// Tabla de Correspondencia
+const vecinos: { [key: string]: string } = {
     "001": "Carlos",
     "002": "María",
     "003": "Jorge",
@@ -23,9 +18,10 @@ const vecinos = {
 
 bot.on("message", (ctx) => {
     const codigo = ctx.message?.text;
-    if (vecinos[codigo]) {
+    if (codigo && vecinos.hasOwnProperty(codigo)) {
         ctx.reply(`El vecino ${vecinos[codigo]} ha activado la alarma`);
     }
+    // Si el código no se encuentra en la tabla, no hará nada
 });
 
 bot.start().catch(err => console.error(err));
