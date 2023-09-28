@@ -2,6 +2,7 @@ import { Bot } from "grammy";
 import express from "express";
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
+const app = express();
 
 const vecinos: { [key: string]: string } = {
     "001": "Carlos",
@@ -23,15 +24,14 @@ bot.on("message", (ctx) => {
     }
 });
 
-// Añadiendo servidor Express
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-    res.send('Bot está en funcionamiento.');
+// Añadir un punto final para el webhook
+app.use(express.json());
+app.post('/webhook', (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-    bot.start().catch(err => console.error(err));
+    console.log(`Server started and listening on port ${PORT}`);
 });
