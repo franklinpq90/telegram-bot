@@ -26,7 +26,7 @@ const registerNeighborCommands = () => {
 }
 
 registerNeighborCommands();  // Aquí está la llamada que faltaba
-
+bot.api.setMyCommands([]);
 // Start the server
 if (process.env.NODE_ENV === "production") {
   // Use Webhooks for the production server
