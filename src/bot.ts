@@ -17,6 +17,10 @@ const vecinos: { [key: string]: string } = {
     "010": "Sofía",
 };
 
+bot.command("start", (ctx) => {
+    ctx.reply("¡Hola! Este es el bot de la urbanización. Envía un código para obtener la respuesta correspondiente.");
+});
+
 bot.on("message", (ctx) => {
     const codigo = ctx.message?.text;
     if (codigo && vecinos.hasOwnProperty(codigo)) {
