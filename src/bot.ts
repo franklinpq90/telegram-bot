@@ -204,6 +204,13 @@ Object.keys(neighborsMapping).forEach(command => {
         ctx.reply(neighborsMapping[command]);
     });
 });
+bot.on("message", (ctx) => {
+    if (ctx.message?.text && neighborsMapping[ctx.message.text]) {
+        ctx.reply(neighborsMapping[ctx.message.text]);
+    } else {
+        // Aquí puedes manejar otros mensajes generales si lo deseas
+    }
+});
 
 
 // Start the server
