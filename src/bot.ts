@@ -19,12 +19,13 @@ const neighborsMapping: { [key: string]: string } = {
     // ... añade más si es necesario
 };
 
-// Manejador de mensajes para identificar a los vecinos
-bot.on("message", (ctx) => {
-    if (ctx.message?.text && neighborsMapping[ctx.message.text]) {
-        ctx.reply(neighborsMapping[ctx.message.text]);
+const registerNeighborCommands = () => {
+    for (const [command, message] of Object.entries(neighborsMapping)) {
+        bot.command(command.slice(1), (ctx) => ctx.reply(message));
     }
-});
+}
+
+registerNeighborCommands();  // Aquí está la llamada que faltaba
 
 // Start the server
 if (process.env.NODE_ENV === "production") {
