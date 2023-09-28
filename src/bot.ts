@@ -7,24 +7,33 @@ import type { Variant as TextEffectVariant } from "./textEffects";
 
 // Create a bot using the Telegram token
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
+// Definición del mapeo de códigos de vecinos
 const neighborsMapping: { [key: string]: string } = {
     "/001": "El vecino Carlos ha activado la alarma",
-    "/002": "El vecino Roberto ha activado la alarma",
-    "/003": "El vecino Marta ha activado la alarma",
-    "/004": "El vecino Alberto ha activado la alarma",
-    "/005": "El vecino Sofia ha activado la alarma",
-    "/006": "El vecino Javier ha activado la alarma",
-    "/007": "El vecino Estela ha activado la alarma",
-    "/008": "El vecino Raúl ha activado la alarma",
-    "/009": "El vecino Gabriela ha activado la alarma",
-    "/010": "El vecino Ernesto ha activado la alarma",
-// Handle the /yo command to greet the user
-bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
+    "/002": "El vecino Ana ha activado la alarma",
+    "/003": "El vecino Luis ha activado la alarma",
+    "/004": "El vecino Marta ha activado la alarma",
+    "/005": "El vecino Pedro ha activado la alarma",
+    "/006": "El vecino Carmen ha activado la alarma",
+    "/007": "El vecino Antonio ha activado la alarma",
+    "/008": "El vecino Teresa ha activado la alarma",
+    "/009": "El vecino José ha activado la alarma",
+    "/010": "El vecino Isabel ha activado la alarma",
+    // ... añade más si es necesario
+};
+
+// Registrar dinámicamente comandos para cada vecino en neighborsMapping
 Object.keys(neighborsMapping).forEach(command => {
     bot.command(command.slice(1), (ctx) => {  
         ctx.reply(neighborsMapping[command]);
     });
 });
+
+// Aquí continuaría el resto del código original...
+
+// Handle the /yo command to greet the user
+bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
+
 // Handle the /effect command to apply text effects using an inline keyboard
 type Effect = { code: TextEffectVariant; label: string };
 const allEffects: Effect[] = [
