@@ -10,6 +10,18 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 // Handle the /yo command to greet the user
 bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
+const neighborsMapping: { [code: string]: string } = {
+  "001": "El vecino Carlos ha activado la alarma.",
+  "002": "El vecino Luis ha activado la alarma.",
+  "003": "La vecina Ana ha activado la alarma.",
+  "004": "El vecino Manuel ha activado la alarma.",
+  "005": "La vecina Carmen ha activado la alarma.",
+  "006": "El vecino Rodrigo ha activado la alarma.",
+  "007": "La vecina Maria ha activado la alarma.",
+  "008": "El vecino Pedro ha activado la alarma.",
+  "009": "La vecina Teresa ha activado la alarma.",
+  "010": "El vecino Jorge ha activado la alarma.",
+};
 
 // Handle the /effect command to apply text effects using an inline keyboard
 type Effect = { code: TextEffectVariant; label: string };
@@ -172,7 +184,12 @@ const introductionMessage = `Hola, soy el bot del Norte.
 <b>Commands</b>
 /yo - Be greeted by me
 /effect [text] - Show a keyboard to apply text effects to [text]`;
-
+bot.on('message', (ctx) => {
+  const inputMessage = ctx.message?.text || "";
+  if (neighborsMapping[inputMessage]) {
+    ctx.reply(neighborsMapping[inputMessage]);
+  }
+});
 const replyWithIntro = (ctx: any) =>
   ctx.reply(introductionMessage, {
     reply_markup: aboutUrlKeyboard,
