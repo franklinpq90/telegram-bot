@@ -16,45 +16,28 @@ const neighborsMapping: { [key: string]: string } = {
     "/008": "El vecino Teresa ha activado la alarma",
     "/009": "El vecino José ha activado la alarma",
     "/010": "El vecino Isabel ha activado la alarma",
-    // ... (y así sucesivamente con el resto de vecinos)
+    // ... añade más si es necesario
 };
 
-const registerNeighborCommands = () => {
-    for (const [command, message] of Object.entries(neighborsMapping)) {
-        bot.command(command.slice(1), (ctx) => ctx.reply(message));
-    }
-}
-
-const introductionMessage = `Hola, soy el bot del Norte.`;
-
-const replyWithIntro = (ctx: any) => ctx.reply(introductionMessage, { parse_mode: "HTML" });
-
-bot.command("start", replyWithIntro);
-
-// Manejador de mensajes modificado
+// Manejador de mensajes para identificar a los vecinos
 bot.on("message", (ctx) => {
-    if (ctx.message?.text) {
-        if (neighborsMapping[ctx.message.text]) {
-            ctx.reply(neighborsMapping[ctx.message.text]);
-        } else if (ctx.message.text === "/start") {
-            replyWithIntro(ctx);
-        }
-        // Aquí puedes agregar más condiciones si lo deseas
+    if (ctx.message?.text && neighborsMapping[ctx.message.text]) {
+        ctx.reply(neighborsMapping[ctx.message.text]);
     }
 });
 
 // Start the server
 if (process.env.NODE_ENV === "production") {
-    // Use Webhooks for the production server
-    const app = express();
-    app.use(express.json());
-    app.use(webhookCallback(bot, "express"));
+  // Use Webhooks for the production server
+  const app = express();
+  app.use(express.json());
+  app.use(webhookCallback(bot, "express"));
 
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Bot listening on port ${PORT}`);
-    });
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Bot listening on port ${PORT}`);
+  });
 } else {
-    // Use Long Polling for development
-    bot.start();
+  // Use Long Polling for development
+  bot.start();
 }
