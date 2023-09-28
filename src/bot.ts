@@ -1,4 +1,4 @@
-import { Bot } from "grammy";
+import { Bot, webhookCallback } from "grammy";
 import express from "express";
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
@@ -24,12 +24,9 @@ bot.on("message", (ctx) => {
     }
 });
 
-// Añadir un punto final para el webhook
+// Actualización para manejar las peticiones del webhook
 app.use(express.json());
-app.post('/webhook', (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
-});
+app.use('/webhook', webhookCallback(bot));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
