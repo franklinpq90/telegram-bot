@@ -4,7 +4,7 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 // Tabla de Correspondencia
 const vecinos: { [key: string]: string } = {
-    "001": "Carlos",
+    "001": "Carlo",
     "002": "María",
     "003": "Jorge",
     "004": "Luisa",
