@@ -203,7 +203,7 @@ const replyWithIntro = (ctx: any) =>
   });
 
 bot.command("start", replyWithIntro);
-bot.on("message", replyWithIntro);
+//bot.on("message", replyWithIntro);
 
 // Start the server
 if (process.env.NODE_ENV === "production") {
