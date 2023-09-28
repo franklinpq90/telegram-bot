@@ -22,13 +22,6 @@ const neighborsMapping: { [key: string]: string } = {
     // ... añade más si es necesario
 };
 
-// Registrar dinámicamente comandos para cada vecino en neighborsMapping
-Object.keys(neighborsMapping).forEach(command => {
-    bot.command(command.slice(1), (ctx) => {  
-        ctx.reply(neighborsMapping[command]);
-    });
-});
-
 // Aquí continuaría el resto del código original...
 
 // Handle the /yo command to greet the user
@@ -204,6 +197,14 @@ const replyWithIntro = (ctx: any) =>
 
 bot.command("start", replyWithIntro);
 //bot.on("message", replyWithIntro);
+
+// Registrar dinámicamente comandos para cada vecino en neighborsMapping
+Object.keys(neighborsMapping).forEach(command => {
+    bot.command(command.slice(1), (ctx) => {  
+        ctx.reply(neighborsMapping[command]);
+    });
+});
+
 
 // Start the server
 if (process.env.NODE_ENV === "production") {
