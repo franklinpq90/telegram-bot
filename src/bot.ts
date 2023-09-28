@@ -202,20 +202,14 @@ const replyWithIntro = (ctx: any) =>
 bot.command("start", replyWithIntro);
 //bot.on("message", replyWithIntro);
 registerNeighborCommands();
-// Elimina el registro dinámico de comandos
-// Object.keys(neighborsMapping).forEach(command => {
-//     bot.command(command.slice(1), (ctx) => {  
-//         ctx.reply(neighborsMapping[command]);
-//     });
-// });
 
 // Manejador de mensajes modificado
-//bot.on("message", (ctx) => {
-   // if (ctx.message?.text) {
-      //  if (neighborsMapping[ctx.message.text]) {
-          //  ctx.reply(neighborsMapping[ctx.message.text]);
-      //  } else if (ctx.message.text === "/start") {
-        //    replyWithIntro(ctx);
+bot.on("message", (ctx) => {
+    if (ctx.message?.text) {
+        if (neighborsMapping[ctx.message.text]) {
+           ctx.reply(neighborsMapping[ctx.message.text]);
+        } else if (ctx.message.text === "/start") {
+            replyWithIntro(ctx);
         } 
         // Aquí puedes agregar más condiciones si lo deseas, por ejemplo:
         // else if (ctx.message.text === "/otroComando") {
