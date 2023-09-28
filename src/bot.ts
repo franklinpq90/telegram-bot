@@ -22,7 +22,11 @@ const neighborsMapping: { [key: string]: string } = {
     // ... añade más si es necesario
 };
 
-// Aquí continuaría el resto del código original...
+const registerNeighborCommands = () => {
+    for (const [command, message] of Object.entries(neighborsMapping)) {
+        bot.command(command.slice(1), (ctx) => ctx.reply(message));
+    }
+}
 
 // Handle the /yo command to greet the user
 bot.command("yo", (ctx) => ctx.reply(`Yo ${ctx.from?.username}`));
@@ -197,7 +201,7 @@ const replyWithIntro = (ctx: any) =>
 
 bot.command("start", replyWithIntro);
 //bot.on("message", replyWithIntro);
-
+registerNeighborCommands();
 // Elimina el registro dinámico de comandos
 // Object.keys(neighborsMapping).forEach(command => {
 //     bot.command(command.slice(1), (ctx) => {  
@@ -206,12 +210,12 @@ bot.command("start", replyWithIntro);
 // });
 
 // Manejador de mensajes modificado
-bot.on("message", (ctx) => {
-    if (ctx.message?.text) {
-        if (neighborsMapping[ctx.message.text]) {
-            ctx.reply(neighborsMapping[ctx.message.text]);
-        } else if (ctx.message.text === "/start") {
-            replyWithIntro(ctx);
+//bot.on("message", (ctx) => {
+   // if (ctx.message?.text) {
+      //  if (neighborsMapping[ctx.message.text]) {
+          //  ctx.reply(neighborsMapping[ctx.message.text]);
+      //  } else if (ctx.message.text === "/start") {
+        //    replyWithIntro(ctx);
         } 
         // Aquí puedes agregar más condiciones si lo deseas, por ejemplo:
         // else if (ctx.message.text === "/otroComando") {
