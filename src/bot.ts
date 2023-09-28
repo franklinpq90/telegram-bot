@@ -179,21 +179,39 @@ const replyWithIntro = (ctx: any) =>
     parse_mode: "HTML",
   });
 
-bot.command("start", replyWithIntro);
-bot.on("message", replyWithIntro);
+// Tabla de Correspondencia
+const vecinos = {
+  "001": "Carlos",
+  "002": "María",
+  "003": "Jorge",
+  "004": "Luisa",
+  "005": "Roberto",
+  "006": "Elena",
+  "007": "Pedro",
+  "008": "Ana",
+  "009": "Miguel",
+  "010": "Sofía",
+};
 
-// Start the server
+bot.on("message", (ctx) => {
+  const codigo = ctx.message?.text;
+  if (vecinos[codigo]) {
+    ctx.reply(`El vecino ${vecinos[codigo]} ha activado la alarma`);
+  } else {
+    replyWithIntro(ctx);
+  }
+});
+
+bot.command("start", replyWithIntro);
+
 if (process.env.NODE_ENV === "production") {
-  // Use Webhooks for the production server
   const app = express();
   app.use(express.json());
   app.use(webhookCallback(bot, "express"));
-
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Bot listening on port ${PORT}`);
   });
 } else {
-  // Use Long Polling for development
   bot.start();
 }
