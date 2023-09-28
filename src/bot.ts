@@ -1,10 +1,10 @@
 import { Bot } from "grammy";
+import express from "express";
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-// Tabla de Correspondencia
 const vecinos: { [key: string]: string } = {
-    "001": "Carlo",
+    "001": "Carlos",
     "002": "María",
     "003": "Jorge",
     "004": "Luisa",
@@ -21,7 +21,17 @@ bot.on("message", (ctx) => {
     if (codigo && vecinos.hasOwnProperty(codigo)) {
         ctx.reply(`El vecino ${vecinos[codigo]} ha activado la alarma`);
     }
-    // Si el código no se encuentra en la tabla, no hará nada
 });
 
-bot.start().catch(err => console.error(err));
+// Añadiendo servidor Express
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('Bot está en funcionamiento.');
+});
+
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+    bot.start().catch(err => console.error(err));
+});
