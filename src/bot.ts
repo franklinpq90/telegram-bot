@@ -12,15 +12,18 @@ const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/w
 const WAKE_UP_DELAY = 2000;
 
 const neighborsMapping: { [key: string]: string } = {
-    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
-    // ... [Resto de mapeos de vecinos]
+    "001": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
+    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecina Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
+    "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Luis podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
 };
 
-const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', 'DEACTIVATE_ALARM');
+bot.command('wake_up', (ctx) => { /* simplemente despertar, no hacer nada */ });
 
 bot.command('stop_alarm', async (ctx) => {
     // ... [Código existente para stop_alarm]
 });
+
+const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', 'DEACTIVATE_ALARM');
 
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
@@ -40,16 +43,13 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            // Enviar mensaje real al usuario privado
             bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje a usuario privado:", error);
             });
-            // Enviar mensaje real al grupo
             bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje al grupo:", error);
             });
-
-            // Enviar webhook a IFTTT para activar la alarma
+            
             try {
                 const response = await fetch(IFTTT_ACTIVATE_URL, {
                     method: 'POST',
@@ -71,7 +71,6 @@ app.use(webhookCallback(bot, "express"));
 
 bot.on('callback_query', async (ctx) => {
     if (ctx.callbackQuery.data === 'DEACTIVATE_ALARM') {
-        // Código para desactivar alarma 
         try {
             const response = await fetch(IFTTT_DEACTIVATE_URL, {
                 method: 'POST',
@@ -98,3 +97,4 @@ app.listen(PORT, () => {
 
 if (process.env.NODE_ENV !== "production") {
     bot.start();
+}
