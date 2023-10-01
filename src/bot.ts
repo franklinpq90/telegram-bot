@@ -13,7 +13,7 @@ const WAKE_UP_DELAY = 2000;
 
 const neighborsMapping: { [key: string]: string } = {
     "001": "*🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨*\n\nEl vecino *Pepito* podría estar en peligro. 🆘❗️\n\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
-    "002": "*🚨🚨🚨 ¡ALARMA! 🚨🚨🚨*\n\n 🆘*Ana podría estar en peligro.*🆘\n\n⚠️ Por favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\n\n Si todo está en orden, puedes desactivar la alarma.",
+    "002": "*🚨🚨🚨 ¡ALARMA! 🚨🚨🚨*\n\n 🆘 *Ana podría estar en peligro.* 🆘\n\n⚠️ Por favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\n\n Si todo está en orden, puedes desactivar la alarma.",
     "003": "*🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨*\n\nEl vecino *Luis* podría estar en peligro. 🆘❗️\n\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
 };
 
