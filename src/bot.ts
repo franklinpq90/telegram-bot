@@ -5,21 +5,23 @@ import express from "express";
 import fetch from 'node-fetch';
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
-const USER_ID = 352099074; // ID del usuario privado
-const GROUP_ID = -1001946468061; // ID del grupo
+const USER_ID = 352099074;
+const GROUP_ID = -1001946468061;
 const IFTTT_ACTIVATE_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`;
 const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/with/key/909qHZ89JlAPXhoRezAYf`;
 const WAKE_UP_DELAY = 2000;
 
-const neighborsMapping: { [key: string]: string } = {
+const neighborsMapping = {
     "001": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
     "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecina Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
     "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Luis podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
 };
 
-bot.command('wake_up', (ctx) => { /* simplemente despertar, no hacer nada */ });
+bot.command('wake_up', (ctx) => {});
 
-bot.command('stop_alarm', async (ctx) => {
+const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', 'stop_alarm_callback');
+
+bot.callbackQuery('stop_alarm_callback', async (ctx) => {
     try {
         const response = await fetch(IFTTT_DEACTIVATE_URL, {
             method: 'POST',
@@ -38,8 +40,6 @@ bot.command('stop_alarm', async (ctx) => {
     }
 });
 
-const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', '/stop_alarm');
-
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
         bot.command(command, (ctx) => ctx.reply(message, { reply_markup: inlineKeyboard }));
@@ -53,29 +53,18 @@ const app = express();
 app.use(express.json());
 
 app.post("/ifttt-webhook", async (req, res) => {
-    console.log("Recibida petición desde IFTTT:", req.body);
     const data = req.body;
 
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            // Enviar el comando "wake_up" para activar al bot
-            bot.api.sendMessage(USER_ID, "/wake_up").catch(error => {
-                console.error("Error al despertar el bot:", error);
-            });
+            bot.api.sendMessage(USER_ID, "/wake_up").catch(error => console.error("Error al despertar el bot:", error));
             
-            // Esperar el delay definido
             await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
             
-            // Ahora enviar el mensaje real
-            bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
-                console.error("Error al enviar el mensaje a usuario privado:", error);
-            });
-            bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
-                console.error("Error al enviar el mensaje al grupo:", error);
-            });
+            bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => console.error("Error al enviar el mensaje a usuario privado:", error));
+            bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => console.error("Error al enviar el mensaje al grupo:", error));
 
-            // Enviar webhook a IFTTT para activar la alarma
             try {
                 const response = await fetch(IFTTT_ACTIVATE_URL, {
                     method: 'POST',
