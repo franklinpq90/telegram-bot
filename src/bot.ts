@@ -12,9 +12,9 @@ const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/w
 const WAKE_UP_DELAY = 2000;
 
 const neighborsMapping: { [key: string]: string } = {
-    "001": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes [desactivar la alarma aquí](/stop_alarm).",
-    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecina Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes [desactivar la alarma aquí](/stop_alarm).",
-    "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Luis podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes [desactivar la alarma aquí](/stop_alarm).",
+    "001": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
+    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecina Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
+    "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Luis podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
 };
 
 bot.command('wake_up', (ctx) => { /* simplemente despertar, no hacer nada */ });
@@ -38,10 +38,11 @@ bot.command('stop_alarm', async (ctx) => {
     }
 });
 
+const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', '/stop_alarm');
+
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
-        const keyboard = new InlineKeyboard().text('Desactivar alarma', '/stop_alarm');
-        bot.command(command, (ctx) => ctx.reply(message, { reply_markup: keyboard }));
+        bot.command(command, (ctx) => ctx.reply(message, { reply_markup: inlineKeyboard }));
     }
 };
 
@@ -67,10 +68,10 @@ app.post("/ifttt-webhook", async (req, res) => {
             await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
             
             // Ahora enviar el mensaje real
-            bot.api.sendMessage(USER_ID, messageToSend).catch(error => {
+            bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje a usuario privado:", error);
             });
-            bot.api.sendMessage(GROUP_ID, messageToSend, { parse_mode: 'Markdown' }).catch(error => {
+            bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje al grupo:", error);
             });
 
