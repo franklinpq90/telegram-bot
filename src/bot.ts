@@ -5,7 +5,7 @@ import express from "express";
 import fetch from 'node-fetch';
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
-const GROUP_ID = -1001946468061; // ID del grupo
+const GROUP_ID = -1001946468061;  // ID del grupo
 const IFTTT_ACTIVATE_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`;
 const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/with/key/909qHZ89JlAPXhoRezAYf`;
 
@@ -26,7 +26,7 @@ bot.command('stop_alarm', async (ctx) => {
                 'Content-Type': 'application/json'
             }
         });
-
+        
         if (response.ok) {
             ctx.reply("¡Alarma desactivada! 🔕");
         } else {
@@ -58,9 +58,9 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            // Enviar el comando "wake_up" para activar al bot
+            // Enviar el comando "/wake_up" al grupo
             bot.api.sendMessage(GROUP_ID, "/wake_up").catch(error => {
-                console.error("Error al despertar el bot:", error);
+                console.error("Error al enviar el mensaje de despertar:", error);
             });
 
             // Ahora enviar el mensaje real
