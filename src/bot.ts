@@ -19,10 +19,6 @@ const neighborsMapping: { [key: string]: string } = {
 
 bot.command('wake_up', (ctx) => { /* simplemente despertar, no hacer nada */ });
 
-bot.command('stop_alarm', async (ctx) => {
-    // ... [Código existente para stop_alarm]
-});
-
 const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', 'DEACTIVATE_ALARM');
 
 const registerNeighborCommands = () => {
@@ -43,13 +39,23 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
+            // Enviar el comando "wake_up" para activar al bot
+            bot.api.sendMessage(USER_ID, "/wake_up").catch(error => {
+                console.error("Error al despertar el bot:", error);
+            });
+            
+            // Esperar el delay definido
+            await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
+            
+            // Ahora enviar el mensaje real
             bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje a usuario privado:", error);
             });
             bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje al grupo:", error);
             });
-            
+
+            // Enviar webhook a IFTTT para activar la alarma
             try {
                 const response = await fetch(IFTTT_ACTIVATE_URL, {
                     method: 'POST',
