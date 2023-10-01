@@ -2,9 +2,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { Bot, webhookCallback } from "grammy";
 import express from "express";
+import fetch from 'node-fetch';  // Importamos el módulo node-fetch
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 const USER_ID = 352099074; // ID del usuario
+const IFTTT_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`; // URL para activar la alarma en IFTTT
 
 const neighborsMapping: { [key: string]: string } = {
     "001": "El vecino Pepito ha activado la alarma",
@@ -25,8 +27,8 @@ bot.api.setMyCommands([]);
 const app = express();
 app.use(express.json());
 
-app.post("/ifttt-webhook", (req, res) => {
-    console.log("Recibida petición desde IFTTT:", req.body); // <-- log aquí
+app.post("/ifttt-webhook", async (req, res) => {
+    console.log("Recibida petición desde IFTTT:", req.body);
 
     const data = req.body;
 
@@ -37,6 +39,19 @@ app.post("/ifttt-webhook", (req, res) => {
                 .catch(error => {
                     console.error("Error al enviar el mensaje:", error);
                 });
+
+            // Enviar webhook a IFTTT para activar la alarma
+            try {
+                const response = await fetch(IFTTT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log(`Respuesta de IFTTT: ${response.status}`);
+            } catch (err) {
+                console.error("Error al enviar webhook a IFTTT:", err);
+            }
         }
     }
 
