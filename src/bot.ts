@@ -38,7 +38,26 @@ bot.command('stop_alarm', async (ctx) => {
     }
 });
 
-const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', '/stop_alarm');
+const inlineKeyboard = new InlineKeyboard().callback('Desactivar alarma', 'stop_alarm_callback');
+
+bot.callbackQuery('stop_alarm_callback', async (ctx) => {
+    try {
+        const response = await fetch(IFTTT_DEACTIVATE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            await ctx.answerCallbackQuery({ text: "¡Alarma desactivada! 🔕" });
+        } else {
+            await ctx.answerCallbackQuery({ text: "Hubo un problema al intentar desactivar la alarma. Por favor, inténtalo de nuevo." });
+        }
+    } catch (err) {
+        console.error("Error al enviar webhook a IFTTT para desactivar:", err);
+        await ctx.answerCallbackQuery({ text: "Error al intentar desactivar la alarma. Por favor, inténtalo de nuevo." });
+    }
+});
 
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
