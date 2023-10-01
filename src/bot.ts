@@ -26,12 +26,13 @@ const app = express();
 app.use(express.json());
 
 app.post("/ifttt-webhook", (req, res) => {
+    console.log("Recibida petición desde IFTTT:", req.body); // <-- log aquí
+
     const data = req.body;
 
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            // Usando callApi en lugar del método telegram anterior
             bot.api.sendMessage(USER_ID, messageToSend)
                 .catch(error => {
                     console.error("Error al enviar el mensaje:", error);
