@@ -34,13 +34,44 @@ const app = express();
 app.use(express.json());
 
 app.post("/ifttt-webhook", async (req, res) => {
-    // ... [Resto del código del webhook]
+    console.log("Recibida petición desde IFTTT:", req.body);
+    const data = req.body;
+
+    if (data && data.user_id && data.action === "button_pressed") {
+        const messageToSend = neighborsMapping[data.user_id];
+        if (messageToSend) {
+            // Enviar mensaje real al usuario privado
+            bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
+                console.error("Error al enviar el mensaje a usuario privado:", error);
+            });
+            // Enviar mensaje real al grupo
+            bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
+                console.error("Error al enviar el mensaje al grupo:", error);
+            });
+
+            // Enviar webhook a IFTTT para activar la alarma
+            try {
+                const response = await fetch(IFTTT_ACTIVATE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log(`Respuesta de IFTTT: ${response.status}`);
+            } catch (err) {
+                console.error("Error al enviar webhook a IFTTT:", err);
+            }
+        }
+    }
+
+    res.status(200).send("OK");
 });
 
 app.use(webhookCallback(bot, "express"));
 
 bot.on('callback_query', async (ctx) => {
     if (ctx.callbackQuery.data === 'DEACTIVATE_ALARM') {
+        // Código para desactivar alarma 
         try {
             const response = await fetch(IFTTT_DEACTIVATE_URL, {
                 method: 'POST',
@@ -67,4 +98,3 @@ app.listen(PORT, () => {
 
 if (process.env.NODE_ENV !== "production") {
     bot.start();
-}
