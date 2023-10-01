@@ -23,20 +23,6 @@ const registerNeighborCommands = () => {
 registerNeighborCommands();
 bot.api.setMyCommands([]);
 
-function pingTelegramAndSendMessage(userId: number, messageToSend: string) {
-    bot.api.getMe()
-        .then(response => {
-            console.log("Ping exitoso:", response);
-            return bot.api.sendMessage(userId, messageToSend);
-        })
-        .then(response => {
-            console.log("Mensaje enviado con éxito:", response);
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-}
-
 const app = express();
 app.use(express.json());
 
@@ -48,7 +34,11 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            pingTelegramAndSendMessage(USER_ID, messageToSend);
+            bot.api.sendMessage(USER_ID, messageToSend)
+                .catch(error => {
+                    console.error("Error al enviar el mensaje:", error);
+                });
+
             try {
                 const response = await fetch(IFTTT_URL, {
                     method: 'POST',
