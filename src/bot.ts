@@ -4,7 +4,7 @@ import { Bot, webhookCallback } from "grammy";
 import express from "express";
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
-const GROUP_ID = 352099074; // ID del grupo
+const USER_ID = 352099074; // ID del usuario
 
 const neighborsMapping: { [key: string]: string } = {
     "001": "El vecino Pepito ha activado la alarma",
@@ -32,7 +32,7 @@ app.post("/ifttt-webhook", (req, res) => {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
             // Usando callApi en lugar del método telegram anterior
-            bot.api.sendMessage(GROUP_ID, messageToSend)
+            bot.api.sendMessage(USER_ID, messageToSend)
                 .catch(error => {
                     console.error("Error al enviar el mensaje:", error);
                 });
