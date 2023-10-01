@@ -12,7 +12,7 @@ const WAKE_UP_DELAY = 2000; // 2 segundos
 
 const neighborsMapping: { [key: string]: string } = {
     "001": "El vecino Pepito ha activado la alarma",
-    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️"
+    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
     "003": "El vecino Lolo ha activado la alarma",
     "004": "El vecino Luis ha activado la alarma",
 };
