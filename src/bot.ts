@@ -39,11 +39,15 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            // Enviar el comando "wake_up" para activar al bot
+            // Enviar el comando "wake_up" para activar al bot al usuario privado
             bot.api.sendMessage(USER_ID, "/wake_up").catch(error => {
-                console.error("Error al despertar el bot:", error);
+                console.error("Error al despertar el bot privado:", error);
             });
-            
+            // Enviar el comando "wake_up" para activar al bot al grupo
+            bot.api.sendMessage(GROUP_ID, "/wake_up").catch(error => {
+                console.error("Error al despertar el bot del grupo:", error);
+            });
+
             // Esperar el delay definido
             await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
             
