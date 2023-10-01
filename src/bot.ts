@@ -12,7 +12,9 @@ const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/w
 const WAKE_UP_DELAY = 2000;
 
 const neighborsMapping: { [key: string]: string } = {
-    // ... tus vecinos ...
+    "001": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
+    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecina Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
+    "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Luis podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️\nSi todo está en orden, puedes desactivar la alarma.",
 };
 
 bot.command('wake_up', (ctx) => { /* simplemente despertar, no hacer nada */ });
@@ -57,16 +59,23 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
+            // Enviar el comando "wake_up" para activar al bot
             bot.api.sendMessage(USER_ID, "/wake_up").catch(error => {
                 console.error("Error al despertar el bot:", error);
             });
+            
+            // Esperar el delay definido
             await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
+            
+            // Ahora enviar el mensaje real
             bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje a usuario privado:", error);
             });
             bot.api.sendMessage(GROUP_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje al grupo:", error);
             });
+
+            // Enviar webhook a IFTTT para activar la alarma
             try {
                 const response = await fetch(IFTTT_ACTIVATE_URL, {
                     method: 'POST',
@@ -80,6 +89,7 @@ app.post("/ifttt-webhook", async (req, res) => {
             }
         }
     }
+
     res.status(200).send("OK");
 });
 
