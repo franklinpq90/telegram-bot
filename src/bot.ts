@@ -38,7 +38,7 @@ bot.command('stop_alarm', async (ctx) => {
     }
 });
 
-const inlineKeyboard = new InlineKeyboard().callbackButton('Desactivar alarma', 'stop_alarm_callback');
+const inlineKeyboard = new InlineKeyboard().url('Desactivar alarma', '/stop_alarm');
 
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
