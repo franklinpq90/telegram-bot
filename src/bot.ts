@@ -38,7 +38,7 @@ bot.command('stop_alarm', async (ctx) => {
     }
 });
 
-const inlineKeyboard = new InlineKeyboard().text('Desactivar alarma', '/stop_alarm');
+const inlineKeyboard = new InlineKeyboard().callbackButton('Desactivar alarma', 'DEACTIVATE_ALARM');
 
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
@@ -47,6 +47,28 @@ const registerNeighborCommands = () => {
 };
 
 registerNeighborCommands();
+
+bot.on('callback_query', async (ctx) => {
+    if (ctx.callbackQuery.data === 'DEACTIVATE_ALARM') {
+        await ctx.answerCallbackQuery();
+        await ctx.reply("¡Alarma desactivada! 🔕");
+        try {
+            const response = await fetch(IFTTT_DEACTIVATE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                await ctx.reply("Hubo un problema al intentar desactivar la alarma. Por favor, inténtalo de nuevo.");
+            }
+        } catch (err) {
+            console.error("Error al enviar webhook a IFTTT para desactivar:", err);
+            await ctx.reply("Error al intentar desactivar la alarma. Por favor, inténtalo de nuevo.");
+        }
+    }
+});
+
 bot.api.setMyCommands([]);
 
 const app = express();
@@ -63,10 +85,10 @@ app.post("/ifttt-webhook", async (req, res) => {
             bot.api.sendMessage(USER_ID, "/wake_up").catch(error => {
                 console.error("Error al despertar el bot:", error);
             });
-            
+
             // Esperar el delay definido
             await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
-            
+
             // Ahora enviar el mensaje real
             bot.api.sendMessage(USER_ID, messageToSend, { reply_markup: inlineKeyboard }).catch(error => {
                 console.error("Error al enviar el mensaje a usuario privado:", error);
