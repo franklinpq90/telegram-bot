@@ -5,6 +5,7 @@ import express from "express";
 import fetch from 'node-fetch';
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
+const USER_ID = 352099074;
 const GROUP_ID = -1001946468061;  // ID del grupo
 const IFTTT_ACTIVATE_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`;
 const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/with/key/909qHZ89JlAPXhoRezAYf`;
@@ -58,15 +59,22 @@ app.post("/ifttt-webhook", async (req, res) => {
     if (data && data.user_id && data.action === "button_pressed") {
         const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
-            // Enviar el comando "/wake_up" al grupo
+            // Enviar el comando "/wake_up" al usuario y al grupo
+            bot.api.sendMessage(USER_ID, "/wake_up").catch(error => {
+                console.error("Error al enviar el mensaje de despertar al usuario:", error);
+            });
             bot.api.sendMessage(GROUP_ID, "/wake_up").catch(error => {
-                console.error("Error al enviar el mensaje de despertar:", error);
+                console.error("Error al enviar el mensaje de despertar al grupo:", error);
             });
 
-            // Ahora enviar el mensaje real
+            // Ahora enviar el mensaje real tanto al usuario como al grupo
+            bot.api.sendMessage(USER_ID, messageToSend)
+                .catch(error => {
+                    console.error("Error al enviar el mensaje al usuario:", error);
+                });
             bot.api.sendMessage(GROUP_ID, messageToSend)
                 .catch(error => {
-                    console.error("Error al enviar el mensaje:", error);
+                    console.error("Error al enviar el mensaje al grupo:", error);
                 });
 
             // Enviar webhook a IFTTT para activar la alarma
