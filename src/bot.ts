@@ -29,7 +29,7 @@ app.post("/ifttt-webhook", (req, res) => {
     const data = req.body;
 
     if (data && data.user_id && data.action === "button_pressed") {
-        const messageToSend = neighborsMapping[`/${data.user_id}`];
+      const messageToSend = neighborsMapping[data.user_id];
         if (messageToSend) {
             // Usando callApi en lugar del método telegram anterior
             bot.api.callApi('sendMessage', {
