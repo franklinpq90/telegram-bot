@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import { Bot, webhookCallback } from "grammy";
 import express from "express";
 
@@ -6,7 +8,7 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 // Definición del mapeo de códigos de vecinos
 const neighborsMapping: { [key: string]: string } = {
-    "/001": "/ifttt El vecino Carlos ha activado la alarma",
+    "/001": "El vecino Pepe ha activado la alarma",
     "/002": "El vecino Ana ha activado la alarma",
     "/003": "El vecino Luis ha activado la alarma",
     "/004": "El vecino Marta ha activado la alarma",
