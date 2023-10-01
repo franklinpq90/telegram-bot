@@ -5,7 +5,7 @@ import express from "express";
 import fetch from 'node-fetch';
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
-const USER_ID = 352099074;
+const USER_ID = -1001946468061;
 const IFTTT_ACTIVATE_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`;
 const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/with/key/909qHZ89JlAPXhoRezAYf`;
 
