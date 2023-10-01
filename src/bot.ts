@@ -25,18 +25,25 @@ bot.api.setMyCommands([]);
 const app = express();
 app.use(express.json());
 
-app.post('/ifttt-webhook', (req, res) => {
-    const userId = req.body.user_id;
+app.post("/ifttt-webhook", (req, res) => {
+    const data = req.body;
 
-    // Verifica si el userId está en nuestro mapeo de vecinos
-    if (neighborsMapping[userId]) {
-        bot.telegram.sendMessage(GROUP_ID, neighborsMapping[userId]);
-    } else {
-        console.log(`Usuario no reconocido: ${userId}`);
+    if (data && data.user_id && data.action === "button_pressed") {
+        const messageToSend = neighborsMapping[`/${data.user_id}`];
+        if (messageToSend) {
+            // Usando callApi en lugar del método telegram anterior
+            bot.api.callApi('sendMessage', {
+                chat_id: GROUP_ID,
+                text: messageToSend
+            }).catch(error => {
+                console.error("Error al enviar el mensaje:", error);
+            });
+        }
     }
 
-    res.sendStatus(200);
+    res.status(200).send("OK");
 });
+
 
 app.use(webhookCallback(bot, "express"));
 
