@@ -6,18 +6,37 @@ import fetch from 'node-fetch';
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 const USER_ID = 352099074;
-const IFTTT_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`;
-
-const WAKE_UP_DELAY = 2000; // 2 segundos
+const IFTTT_ACTIVATE_URL = `https://maker.ifttt.com/trigger/activate_alarm/with/key/kOlKPd9k75kNySn7c3JSKgnQBDlbXrYd6O6z-O-6CPy`;
+const IFTTT_DEACTIVATE_URL = `https://maker.ifttt.com/trigger/deactivate_alarm/with/key/909qHZ89JlAPXhoRezAYf`;
 
 const neighborsMapping: { [key: string]: string } = {
     "001": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Pepito podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
-    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecino Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
-    "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Lolo podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
-    "004": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Ruben podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
+    "002": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nLa vecina Ana podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
+    "003": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Luis podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
+    "004": "🚨🚨🚨 ¡ALERTA DE EMERGENCIA! 🚨🚨🚨\nEl vecino Rubén podría estar en peligro. 🆘❗️\nPor favor, verifica si todo está bien. ¡Actúa con precaución! ⚠️",
 };
 
 bot.command('wake_up', (ctx) => { /* simplemente despertar, no hacer nada */ });
+
+bot.command('stop_alarm', async (ctx) => {
+    try {
+        const response = await fetch(IFTTT_DEACTIVATE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            ctx.reply("¡Alarma desactivada! 🔕");
+        } else {
+            ctx.reply("Hubo un problema al intentar desactivar la alarma. Por favor, inténtalo de nuevo.");
+        }
+    } catch (err) {
+        console.error("Error al enviar webhook a IFTTT para desactivar:", err);
+        ctx.reply("Error al intentar desactivar la alarma. Por favor, inténtalo de nuevo.");
+    }
+});
 
 const registerNeighborCommands = () => {
     for (const [command, message] of Object.entries(neighborsMapping)) {
@@ -44,17 +63,15 @@ app.post("/ifttt-webhook", async (req, res) => {
                 console.error("Error al despertar el bot:", error);
             });
 
-            // Esperar el delay definido
-            await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
-
             // Ahora enviar el mensaje real
             bot.api.sendMessage(USER_ID, messageToSend)
                 .catch(error => {
                     console.error("Error al enviar el mensaje:", error);
                 });
 
+            // Enviar webhook a IFTTT para activar la alarma
             try {
-                const response = await fetch(IFTTT_URL, {
+                const response = await fetch(IFTTT_ACTIVATE_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
