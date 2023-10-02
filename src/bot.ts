@@ -13,7 +13,7 @@ const generateRegistrationMessage = (name: string) => {
 };
 
 const neighborsMapping: { [key: string]: string } = {
-    "andreafabiola1997@gmail.com": generateRegistrationMessage("Andrea Rodríguez"),
+    "andreafabiola1997@gmail.com": generateRegistrationMessage("Andreas Rodríguez"),
     "portoviejojc@gmail.com": generateRegistrationMessage("Antonio Chinga"),
     "candraus@gmail.com": generateRegistrationMessage("César Andraus"),
     "cindygiselle6@gmail.com": generateRegistrationMessage("Cindy Díaz"),
