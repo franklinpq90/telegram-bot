@@ -5,7 +5,7 @@ import express from "express";
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 const USER_ID = 352099074; 
-const GROUP_ID = -1001946468061; 
+const GROUP_ID = -1001944748227; 
 const WAKE_UP_DELAY = 2000;
 
 const generateRegistrationMessage = (name: string) => {
