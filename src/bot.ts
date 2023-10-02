@@ -9,7 +9,7 @@ const GROUP_ID = -1001946468061;
 const WAKE_UP_DELAY = 2000;
 
 const generateRegistrationMessage = (name: string) => {
-    return `${name} se ha registrado correctamente en el sistema de alarma.`;
+    return `*${name}* se ha registrado correctamente en el sistema de alarma.`;
 };
 
 const neighborsMapping: { [key: string]: string } = {
@@ -38,8 +38,8 @@ app.post("/ifttt-webhook", async (req, res) => {
 
             await new Promise(resolve => setTimeout(resolve, WAKE_UP_DELAY));
 
-            bot.api.sendMessage(USER_ID, messageToSend);
-            bot.api.sendMessage(GROUP_ID, messageToSend);
+            bot.api.sendMessage(USER_ID, messageToSend, { parse_mode: 'Markdown' });
+            bot.api.sendMessage(GROUP_ID, messageToSend, { parse_mode: 'Markdown' });
         }
     }
 
