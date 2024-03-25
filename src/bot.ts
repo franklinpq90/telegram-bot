@@ -8,7 +8,7 @@ const USER_ID = 352099074;
 const GROUP_ID = -1001944748227; 
 const WAKE_UP_DELAY = 2000;
 
-const generateRegistrationMessage = (name: string) => {
+const generateAlertMessage = (name: string) => {
     return `*${name}* se ha registrado correctamente en el sistema de alarma.`;
 };
 
