@@ -1,4 +1,4 @@
-Configuración nueva registrada
+
 import dotenv from 'dotenv';
 dotenv.config();
 import { Bot, webhookCallback } from "grammy";
@@ -63,7 +63,7 @@ const neighborsMapping: { [key: string]: string } = {
     "luiswittong87@gmail.com": generateAlertMessage("Luis Wittong"),
     "marcosbenicha@gmail.com": generateAlertMessage("Marcos Benitez"),
     "edgargarcia9565@gmail.com": generateAlertMessage("Edgar García")
-    "dpmiranda_@outlook.com": generateAlertMessage("David Miranda")
+     "dpmiranda_@outlook.com": generateAlertMessage("David Miranda")
 };
 
 
