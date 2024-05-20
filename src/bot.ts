@@ -63,7 +63,6 @@ const neighborsMapping: { [key: string]: string } = {
     "luiswittong87@gmail.com": generateAlertMessage("Luis Wittong"),
     "marcosbenicha@gmail.com": generateAlertMessage("Marcos Benitez"),
     "edgargarcia9565@gmail.com": generateAlertMessage("Edgar García")
-     "dpmiranda_@outlook.com": generateAlertMessage("David Miranda")
 };
 
 
