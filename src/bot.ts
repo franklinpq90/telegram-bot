@@ -1,8 +1,9 @@
-
 import dotenv from 'dotenv';
 dotenv.config();
 import { Bot, webhookCallback } from "grammy";
 import express from "express";
+import crypto from "crypto";
+import fetch from "node-fetch";
 
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 const USER_ID = 352099074; 
@@ -65,7 +66,6 @@ const neighborsMapping: { [key: string]: string } = {
     "dpmiranda_@outlook.com": generateAlertMessage("David Miranda")
 };
 
-
 bot.command('wake_up', (ctx) => {});
 
 const app = express();
@@ -88,6 +88,71 @@ app.post("/ifttt-webhook", async (req, res) => {
     }
 
     res.status(200).send("OK");
+});
+
+// NUEVO ENDPOINT PARA ENCENDER EL VENTILADOR DESDE LA WEB
+app.post("/tuya-ventilador", async (req, res) => {
+    const data = req.body;
+
+    if (!data || !data.user_id) {
+        return res.status(400).json({ error: "Falta user_id" });
+    }
+
+    const ACCESS_ID = "g5phehaqdn5pvdmvfvp48";
+    const ACCESS_SECRET = "49a2d1a17bb74bf58b9c7d896748c40f";
+    const DEVICE_ID = "eb2a758589951542e4qhi3";
+    const API_HOST = "https://openapi.tuyaus.com";
+
+    try {
+        const t1 = Date.now().toString();
+        const sign1 = crypto.createHmac("sha256", ACCESS_SECRET)
+            .update(ACCESS_ID + t1)
+            .digest("hex")
+            .toUpperCase();
+
+        const tokenRes = await fetch(`${API_HOST}/v1.0/token?grant_type=1`, {
+            headers: {
+                "client_id": ACCESS_ID,
+                "sign": sign1,
+                "t": t1,
+                "sign_method": "HMAC-SHA256"
+            }
+        });
+
+        const tokenData = await tokenRes.json();
+        const token = tokenData.result.access_token;
+
+        const t2 = Date.now().toString();
+        const sign2 = crypto.createHmac("sha256", ACCESS_SECRET)
+            .update(ACCESS_ID + token + t2)
+            .digest("hex")
+            .toUpperCase();
+
+        const controlRes = await fetch(`${API_HOST}/v1.0/devices/${DEVICE_ID}/commands`, {
+            method: "POST",
+            headers: {
+                "client_id": ACCESS_ID,
+                "access_token": token,
+                "sign": sign2,
+                "t": t2,
+                "sign_method": "HMAC-SHA256",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                commands: [
+                    { code: "switch_1", value: true }
+                ]
+            })
+        });
+
+        const result = await controlRes.json();
+        console.log("✅ Ventilador encendido:", result);
+        res.json({ ok: true, result });
+
+    } catch (err) {
+        console.error("❌ Error al encender el ventilador:", err);
+        res.status(500).json({ error: "Error al encender el ventilador" });
+    }
 });
 
 app.use(webhookCallback(bot, "express"));
