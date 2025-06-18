@@ -8,20 +8,19 @@ import axios from 'axios';
 const app = express();
 app.use(express.json());
 
-const CLIENT_ID = process.env.TUYA_CLIENT_ID || '';
-const CLIENT_SECRET = process.env.TUYA_CLIENT_SECRET || '';
+// Variables desde Render
+const CLIENT_ID = process.env.TUYA_ACCESS_ID || '';
+const CLIENT_SECRET = process.env.TUYA_ACCESS_SECRET || '';
 const DEVICE_ID = process.env.TUYA_DEVICE_ID || '';
+const COMMAND_CODE = process.env.TUYA_DEVICE_COMMAND_CODE || 'switch_1';
 
+// Función para firmar la petición
 function getTuyaSignature(clientId: string, clientSecret: string, timestamp: string): string {
   const message = clientId + timestamp;
-  const sign = crypto
-    .createHmac('sha256', clientSecret)
-    .update(message)
-    .digest('hex')
-    .toUpperCase();
-  return sign;
+  return crypto.createHmac('sha256', clientSecret).update(message).digest('hex').toUpperCase();
 }
 
+// Ruta para encender el dispositivo
 app.post('/encender-ventilador', async (req, res) => {
   try {
     const timestamp = Date.now().toString();
@@ -32,7 +31,7 @@ app.post('/encender-ventilador', async (req, res) => {
       {
         commands: [
           {
-            code: 'switch_1',
+            code: COMMAND_CODE,
             value: true,
           },
         ],
@@ -59,6 +58,7 @@ app.post('/encender-ventilador', async (req, res) => {
   }
 });
 
+// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Bot activo en puerto ${PORT}`);
