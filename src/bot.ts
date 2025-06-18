@@ -55,7 +55,7 @@ app.post('/encender-ventilador', async (req, res) => {
     }
   } catch (error) {
     console.error('Error al enviar comando a Tuya:', error);
-    res.status(500).json({ success: false, error: error });
+    res.status(500).json({ success: false, error });
   }
 });
 
